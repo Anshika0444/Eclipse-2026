@@ -1,6 +1,9 @@
 package pac1;
  
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.time.Duration;
+import java.util.Properties;
  
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -12,28 +15,62 @@ public class Login_POM {
     WebDriver driver;
     WebDriverWait wait;
  
-    By uname = By.name("username");
-    By pword = By.name("password");
-    By loginbutton = By.xpath("//button[@type='submit']");
+    By uname;
+    By pword;
+    By loginbutton;
  
-    public Login_POM(WebDriver driver2) {
+    public Login_POM(WebDriver driver2) throws IOException {
+ 
         this.driver = driver2;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+ 
+        String projectpath = System.getProperty("user.dir");
+ 
+        Properties prob = new Properties();
+ 
+        FileInputStream fis =
+                new FileInputStream(projectpath + "\\data.properties");
+ 
+        prob.load(fis);
+ 
+        String usernameLocator = prob.getProperty("username");
+        String passwordLocator = prob.getProperty("password");
+        String loginButtonLocator = prob.getProperty("login_button");
+ 
+        uname = By.name(
+                usernameLocator.substring(usernameLocator.indexOf("=") + 1)
+        );
+ 
+        pword = By.name(
+                passwordLocator.substring(passwordLocator.indexOf("=") + 1)
+        );
+ 
+        loginbutton = By.xpath(
+                loginButtonLocator.substring(loginButtonLocator.indexOf("=") + 1)
+        );
+ 
+        fis.close();
     }
  
     public void enterusername(String username) {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(uname))
-            .sendKeys(username);
+ 
+        wait.until(
+                ExpectedConditions.visibilityOfElementLocated(uname)
+        ).sendKeys(username);
     }
  
     public void enterpassword(String password) {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(pword))
-            .sendKeys(password);
+ 
+        wait.until(
+                ExpectedConditions.visibilityOfElementLocated(pword)
+        ).sendKeys(password);
     }
  
     public void clicklogin() {
-        wait.until(ExpectedConditions.elementToBeClickable(loginbutton))
-            .click();
+ 
+        wait.until(
+                ExpectedConditions.elementToBeClickable(loginbutton)
+        ).click();
     }
 }
  
